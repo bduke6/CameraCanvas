@@ -1,0 +1,11 @@
+Model Information:
+* title:	Low poly astronaut ps1 style
+* source:	https://sketchfab.com/3d-models/low-poly-astronaut-ps1-style-57d6d2be0af6423cb94c6d851c26eeee
+* author:	albert_buscio (https://sketchfab.com/albert_buscio)
+
+Model License:
+* license type:	CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
+* requirements:	Author must be credited. No commercial use.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Low poly astronaut ps1 style" (https://sketchfab.com/3d-models/low-poly-astronaut-ps1-style-57d6d2be0af6423cb94c6d851c26eeee) by albert_buscio (https://sketchfab.com/albert_buscio) licensed under CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
