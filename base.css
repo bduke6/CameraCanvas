@@ -58,7 +58,7 @@ body {
     padding: 20px;
     margin: 0;
     display: grid;
-    grid-template-columns: 50% 20px 25%;
+    grid-template-columns: 50% 25px 25%;
     grid-template-rows: 75% 5% 75%;            
 }
 a {
@@ -78,6 +78,7 @@ a {
 #renderCanvas1 {
     grid-row: 1;
     grid-column: 3;
+    font: "bold 90px Arial"
 }
 
 #renderCanvas2 {
@@ -86,7 +87,7 @@ a {
 }
 
 #renderCanvas3 {
-    grid-row: 3;
+    grid-row: 1;
     grid-column: 3;
 }
   
