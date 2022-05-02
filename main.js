@@ -13,16 +13,28 @@ class BasicWorldDemo {
         window.addEventListener('resize', () => {
             this._OnWindowResize();
           }, false);
-
+        
         console.log("hello Babylon.js Canvases")
         const canvas = document.createElement('canvas') //notice this is a create element
         const canvasFollow = document.getElementById('renderCanvas0')
+        
+        
+        // canvasFollow.addEventListener("click", (e) => {
+        //     console.log(document.elementFromPoint(e.clientX, e.clientY));
+        //   });
+        //   const e1 = new MouseEvent("click", {
+        //     clientX: 100,
+        //     clientY: 100
+        //   });
+        //   canvasFollow.dispatchEvent(e1)
         this.canvasPov = document.getElementById('renderCanvas1')
-        this.canvas2D = document.getElementById('renderCanvas3')
+        this.canvas2D = document.getElementById('renderCanvas2')
         this.canvas2D.width = this.canvasPov.width
         this.canvas2D.height = this.canvasPov.height
         this.children = [];//used for adding highlights
         
+        this._frame = 0;
+        this._canvasTerminal = new CanvasTerminal(this.canvas2D);
         // Load the model.
         // this.model = cocoSsd.load().then(model=>{
         //     console.log('Model is loaded', model.detect(this.canvasPov))
@@ -34,8 +46,9 @@ class BasicWorldDemo {
             cocoSsd.load().then(model=>{
                 this.model = model
                 console.log('Model loaded calling detect')
-                console.log(this.model)
+                //npconsole.log(this.model)
                 //this._detect(model)
+               
                 
                 this._RAF()
             
@@ -85,22 +98,33 @@ class BasicWorldDemo {
         
         
         // Our built-in 'sphere' shape. Params: name, subdivs, size, scene
-        this._sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 2, this._scene);
-        this._sphere.position.y = 5;
-        console.log(this._sphere.position)
+        // this._sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 2, this._scene);
+        // this._sphere.position.y = 5;
+        // console.log(this._sphere.position)
 
-        const box3 = BABYLON.MeshBuilder.CreateBox("sphere", {width: 1, height:1, depth: 2}, this._scene);
+        const box3 = BABYLON.MeshBuilder.CreateBox("box3D", {width: 1, height:1, depth: 2}, this._scene);
         box3.position.y = 1;
+        
+        // const trans = new BABYLON.Vector3(0,0,0);
+        // const rot = new BABYLON.Vector3(0,0,0);
+        // trans.set(0,0,0);
+        // rot.set(0,0,0);
+        // trans.x = -5;
+        // trans.y = 1;
+        // trans.z = -5;
+        
+        // box3.rotation.y = 45;
+        // box3.locallyTranslate(trans)
 
         const cone = BABYLON.MeshBuilder.CreateCylinder("cone", {diameterTop: 0, diameterBottom: 1, height: 1.5}, this._scene);
         const box2 = BABYLON.MeshBuilder.CreateBox("box", {height: 0.7, depth: 0.5, width: 0.2}, this._scene)
         box2.position.z = -0.5;
         box2.position.y = -0.35;
-        const enemy = BABYLON.Mesh.MergeMeshes([cone, box2]);
+        // const enemy = BABYLON.Mesh.MergeMeshes([cone, box2]);
 
-        enemy.position.x  = this._sphere.position.x;
-        enemy.position.y = this._sphere.position.y;
-        enemy.position.z = this._sphere.position.x;
+        // enemy.position.x  = this._sphere.position.x;
+        // enemy.position.y = this._sphere.position.y;
+        // enemy.position.z = this._sphere.position.x;
 
 
         let size = 6;
@@ -304,10 +328,10 @@ class BasicWorldDemo {
 
         //Follow Camera attempt
         //this._camera = new BABYLON.FollowCamera("FollowCam", new BABYLON.Vector3(-6, 0, 0), this._aaascene);
-        this._camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 10, new BABYLON.Vector3(0, 10, -10), this._scene);
+        this._camera = new BABYLON.ArcRotateCamera("Camera", 3*Math.PI/2, 0, 10, new BABYLON.Vector3(0, 10, -10), this._scene);
         //this._camera.setPosition(new BABYLON.Vector3(0, 200, -30));
         this._camera.heightOffset = 8;
-        this._camera.radius = 1;
+        this._camera.radius = 20; //height above target also can be set in contruactor
         this._camera.rotationOffset = 0;
         this._camera.cameraAcceleration = 0.005;
         this._camera.maxCameraSpeed = 10;
@@ -317,6 +341,18 @@ class BasicWorldDemo {
         this._camera1 = new BABYLON.UniversalCamera("Camera1",box3.position, this._scene); //new BABYLON.Vector3(0, .5, -1)
         // Set the camera's parent to mesh so it will continue to look at it. new BABYLON.Vector3(0, 5, -20)
         this._camera1.parent = box3;  //BABYLON.Vector3.Zero()
+
+        let r = new BABYLON.Vector3(0,0,0)
+        let t = new BABYLON.Vector3(0,0,0)
+        r.set(0,0,0)
+        t.set(-7,0,-7)
+        r.y = Math.PI
+        //box3.rotate(BABYLON.Axis.Y,0, BABYLON.Space.LOCAL);
+        //box3.rotation.addRotation(0,Math.PI/2,0)
+        //t.z = 7;
+        
+        box3.locallyTranslate(t); // new BABYLON.Vector3(0,1,7)
+        box3.rotation.y += Math.PI/3
         this._camera.attachControl(this.canvasPov);
         
         
@@ -369,13 +405,14 @@ class BasicWorldDemo {
         //this._axis = new AxisArrows(this._scene,6, BABYLON.Vector3.Zero, null);
 
         this._LoadMesh();
+        this._LoadSprite();
     
 
         this._engine.registerView(canvasFollow);
         this._engine.registerView(this.canvasPov, this._camera1);
 
         
-    
+        canvasFollow.selected = true;
         // this._RAF();
 
             //})
@@ -395,6 +432,9 @@ class BasicWorldDemo {
                 this._scene.render();
                 //this._writeText();
                 this._detect(this.model)
+                // window.dispatchEvent(new KeyboardEvent('keydown', {
+                //     'key': 'a'
+                //   }));
             }
         })
     
@@ -403,7 +443,8 @@ class BasicWorldDemo {
 
 
     _writeText(predictions){
-
+        this._frame += 1;
+        //console.log(this._frame)
         function getRandomInt(max) {
             return Math.floor(Math.random() * max);
           }
@@ -424,36 +465,46 @@ class BasicWorldDemo {
                 let y = parseInt(bbox[1]);
                 let w = parseInt(bbox[2]);
                 let h = parseInt(bbox[3]);
-                //this._ctx.fillStyle = "rgba(0,0,0,.9)"
+               
                 
                 
                 
                 let font = 'bold 30px Arial'
                 this._ctx.font = font;
-                //"rgba(81,255,13,0)"
-                // this._ctx.fillStyle = "rgba(0,255,0,.4)"
-                // this._ctx.fill();
+                
                 /// get width of text
                 let txt = predictions[n].class + " :" + predictions[n].score.toFixed(2);
                 let width = this._ctx.measureText(txt).width;
                 this._ctx.fillStyle = "rgba(0,255,0,.4)"
                 /// draw background rect assuming height of font
                 this._ctx.fillRect(x-10, y-60, width+20, 40);
-                //this._ctx.fillRect(x, y, 20, 30);
+                
                 this._ctx.fillStyle = "rgba(81,255,13,.8)" //"rgba(0,255,0,.4)"
                 this._ctx.fillText(txt, x, y-30);
-                
-                
-                //   console.log('box x:',x)
-                //   console.log('box y:',y)
-                //   console.log('box w:',w)
-                //   console.log('box h:',h)
+                //console.log(this._frame, txt)
+                this._canvasTerminal.typeOut2(txt,this._frame)
+          
                 this._ctx.strokeStyle = "rgba(0,255,0,.4)"
                 this._ctx.lineWidth = 10;
                 this._ctx.strokeRect(x,y,w,h);
                 this._ctx.fillStyle = "rgba(0,255,0,.4)"
                 //this._ctx.fillRect(x,y - 60,w,30)
-            }    
+            }
+            else{
+                //put a thin box arround it
+                let bbox = predictions[n].bbox;
+                let x = parseInt(bbox[0]);
+                let y = parseInt(bbox[1]);
+                let w = parseInt(bbox[2]);
+                let h = parseInt(bbox[3]);
+
+                this._ctx.strokeStyle = "rgba(0,255,0,.4)"
+                this._ctx.lineWidth = 5;
+                //this._ctx.setDashLine([6])
+                this._ctx.strokeRect(x,y,w,h);
+                //this._ctx.setDashLine([])
+
+            }  
           }//end of for
           
     }
@@ -472,8 +523,21 @@ class BasicWorldDemo {
         //shadowGenerator.addShadowCaster(newMeshes[0]);
     });
 
-    }
+    
 
+    }
+    _LoadSprite(){
+
+        const spriteManagerTrees = new BABYLON.SpriteManager("treesManager", "cat.jpeg", 1, {width: 224, height: 224});
+        const catSprite = new BABYLON.Sprite("tree", spriteManagerTrees);
+        catSprite.width = 2;
+        catSprite.height = 2;
+        catSprite.position.x = 3;
+        catSprite.position.y = 2;
+        catSprite.position.z = -1;
+
+            
+    }
     //coco detection
     _detect(m){
         //console.log('made it to _detect. now doing some stuff')
@@ -531,7 +595,7 @@ class BasicWorldDemo {
     //         }
     //     }
 
-    }
+    }//end of class
 
 // class AxisArrows{
     
@@ -578,9 +642,10 @@ class BasicWorldDemo {
 let _APP = null;
 
 window.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('renderCanvas0').click();
+    
     console.log("DOM content is loaded!!")
     _APP = new BasicWorldDemo();
+    document.getElementById('renderCanvas0').focus();
 }); 
 
 const status = document.getElementById('status');
